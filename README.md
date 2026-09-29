@@ -1,81 +1,112 @@
-# GitHub Radar Bot 🔭🤖
+# 🔭 GitHub Radar — Part 2: Interactive On-Demand Assistant 💬🎙️
 
-An autonomous n8n workflow that scans GitHub daily for trending repositories matching your interests, and delivers a full Arabic voice + text + image breakdown via Telegram — plus on-demand Q&A about any specific repo.
+[![n8n](https://img.shields.io/badge/n8n-Workflow-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)](https://n8n.io/)
+[![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org/)
+[![LangChain](https://img.shields.io/badge/LangChain-Agent-1C3C3C?style=for-the-badge)](https://langchain.com/)
+[![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Voice_TTS-black?style=for-the-badge)](https://elevenlabs.io/)
+[![GitHub API](https://img.shields.io/badge/GitHub-REST_API-181717?style=for-the-badge&logo=github&logoColor=white)](https://docs.github.com/en/rest)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge)](LICENSE)
 
-## 🎯 What it does
+> 💬 **An interactive, event-driven Telegram AI assistant that answers on-demand questions about any GitHub repository. It reads the authentic README via the GitHub REST API and delivers natural Arabic voice podcasts (ElevenLabs), in-depth text analysis, and illustrative diagrams (Qwen Image Gen) — with zero hallucination.**
 
-### 📡 Daily automated digest
-- Runs automatically on a **daily schedule** — no manual searching required.
-- Scans GitHub for trending repos matching a predefined set of interests (e.g. AI, LLMs, automation tools, free-tier APIs, etc. — fully customizable via the system prompt).
-- For each relevant repo found, it automatically fetches the **real README** (never guesses from memory) and generates a structured Arabic breakdown covering:
-  - **What it does** — the project explained in one simple sentence.
-  - **The problem it solves** — why it was built.
-  - **Key strengths** — 2-3 standout features from the actual README.
-  - **Ideas to stand out** — practical, realistic ways to use the project (a side project, a real problem it could solve, an integration angle, an uncommon use case).
-  - **Interest score (1-10)** with actionable advice on how to leverage the project.
+👨‍💻 **Built with ❤️ by M.I.R.**
 
-### 💬 On-demand assistant
-- Ask about **any specific GitHub repo** at any time via Telegram.
-- Get a **spoken Arabic explanation** (text-to-speech via ElevenLabs) of anything you want to know about it.
-- Request an **instant illustrative image** (via Qwen image generation) explaining its architecture or how it works.
-- Every answer is grounded in the repo's actual README — the bot never fabricates features or capabilities.
+---
+
+## 🧭 The Two-Part Ecosystem & Architectural Separation
+
+This repository is **Part 2** of the **GitHub Radar** system. The complete architecture is intentionally decoupled into two complementary modules:
+
+| Module | Primary Trigger | Core Role | Repository Link |
+| :--- | :--- | :--- | :--- |
+| **Part 1** | `Schedule Trigger` (Cron) | **Autonomous Daily Digest:** Runs automatically on schedule, scans trending repos (50K+ stars), reads real documentation, and broadcasts curated briefs. | [github-repositories-radar-part1](https://github.com/Ilyeess-Rj/github-repositories-radar-part1) |
+| **Part 2 (This Repository)** | `Telegram Trigger` (Webhook) | **Interactive On-Demand Assistant:** Answers real-time user questions about any repository with Arabic voice narration (ElevenLabs), text analysis, and diagrams. | [github-repositories-radar (Part 2)](https://github.com/Ilyeess-Rj/github-repositories-radar) |
+
+### ⚠️ Why are Part 1 & Part 2 Split into Separate Workflows?
+> **Key n8n Architectural Constraint:**  
+> In n8n, a single workflow **cannot support two active, independent trigger nodes** simultaneously without causing execution conflicts, event listener collisions, and webhook routing issues.
+> 
+> * **Part 1** must be driven by a **Schedule Trigger** (runs periodically on a clock).
+> * **Part 2** must be driven by an event-based **Telegram Trigger** (wakes up when a user sends a chat message).
+>
+> Because n8n requires each automated flow to possess an unambiguous lifecycle entry point, we cleanly decoupled the radar into **two modular workflows**. You import and run each workflow independently in your n8n instance for maximum stability and zero trigger interference.
+
+---
+
+## 🎯 What Part 2 Does
+
+### 🎙️ 1. Spoken Arabic Voice Explanation (Podcast Mode)
+- Mention keywords like `صوت`, `تسجيل`, `audio`, or `voice` in your message.
+- The agent calls the GitHub API to fetch the real README, crafts an engaging narrative summary in Modern Standard Arabic, converts it into ultra-realistic voice audio via **ElevenLabs**, and delivers an audio file straight to your Telegram chat.
+
+### 📝 2. In-Depth Text & Architectural Diagrams (Visual Mode)
+- Ask regular technical questions or explore integration possibilities.
+- The agent analyzes the project, suggests actionable *"Ideas to Stand Out"* (side projects, RAG integrations, free tool substitutions), and can generate architectural diagrams via **Alibaba Cloud / Qwen (`Gen_IMG`)**.
+
+### 🔒 3. Fully Grounded (Zero Hallucination)
+- The agent is strictly forbidden from answering from pre-trained memory. It must query the `GitHub README tool` first for verified facts.
+
+---
 
 ## 🧩 Tech Stack
 
 | Service | Role |
-|---|---|
-| **n8n** | Workflow orchestration engine (scheduled + event-driven) |
-| **Telegram Bot API** | User-facing interface for both the daily digest and on-demand queries |
-| **OpenRouter (Nemotron)** + **Google Gemini** | LLMs powering the reasoning/writing agents |
-| **Qwen (Alibaba Cloud)** | Search tool + on-demand image generation |
-| **ElevenLabs** | Text-to-Speech for natural Arabic voice narration |
-| **GitHub README tool** | Fetches real README content for grounded, hallucination-free answers |
+| :--- | :--- |
+| **n8n** | Event-driven workflow orchestration engine |
+| **Telegram Bot API** | Interactive mobile interface for on-demand queries |
+| **OpenRouter (Nemotron)** + **Google Gemini** | Dual LLMs powering reasoning, routing, and synthesis |
+| **Qwen (Alibaba Cloud)** | Search tool + on-demand diagram/image generation |
+| **ElevenLabs** | Natural Text-to-Speech synthesis in Arabic |
+| **GitHub REST API** | Fetches live repository README documentation |
+
+---
 
 ## ⚙️ Setup & Usage
 
-### 1. Import the workflow
-- Open your n8n instance.
-- **Workflows → Import from File** → select `GITHUB_RADAR_PT2_clean.json`.
+### 1. Import Workflow
+- In n8n: **Workflows → Import from File** → select `GITHUB_RADAR_PT2_clean.json`.
 
-### 2. Connect the credentials
-The file ships with **no real API keys** (intentionally stripped). You'll need to connect your own:
+### 2. Connect Credentials
+Attach your API credentials to the designated nodes:
 
-| Credential | Where to get it |
-|---|---|
-| Telegram Bot Token | [@BotFather](https://t.me/BotFather) |
-| OpenRouter API Key | [openrouter.ai](https://openrouter.ai) |
-| Google Gemini (PaLM) API Key | [Google AI Studio](https://aistudio.google.com) |
-| Qwen / Alibaba Cloud API Key | [Alibaba Cloud](https://www.alibabacloud.com) |
-| ElevenLabs API Key | [elevenlabs.io](https://elevenlabs.io) |
+| Credential | Node | Where to get it |
+| :--- | :--- | :--- |
+| **Telegram API** | Telegram Trigger & Send Nodes | [@BotFather](https://t.me/BotFather) |
+| **OpenRouter API** | OpenRouter Chat Model | [openrouter.ai](https://openrouter.ai) |
+| **Google Gemini (PaLM) API** | Google Gemini Chat Model | [Google AI Studio](https://aistudio.google.com) |
+| **Alibaba Cloud API** | Search & Gen_IMG Tools | [Alibaba Cloud Model Studio](https://www.alibabacloud.com) |
+| **ElevenLabs API** | Convert text to speech | [elevenlabs.io](https://elevenlabs.io) |
 
-### 3. Customize your interests
-Edit the AI Agent's system prompt to set which topics the daily scan should focus on (e.g. AI, models, automations, free tokens, etc.) — fully customizable to any domain.
+### 3. Dynamic Chat ID
+The Telegram output nodes are already configured dynamically:
+`chatId: "={{ $('Telegram Trigger').item.json.message.chat.id }}"`  
+The bot automatically replies directly to whoever messages it.
 
-### 4. Replace placeholder values
-The workflow file contains:
-- `Telegram Chat ID` → fully dynamic (`={{ $('Telegram Trigger').item.json.message.chat.id }}`), automatically replying to whoever interacts with the bot.
-- `YOUR_WEBHOOK_ID` → n8n auto-generates a new one on activation; you usually don't need to set this manually.
-- `YOUR_INSTANCE_ID` → an internal identifier, auto-filled by n8n.
+### 4. Activate Workflow
+Toggle the workflow to **Active**. You can now message your Telegram bot anytime!
 
-### 5. Activate the workflow
-Toggle **Active** in n8n. The daily digest will start running on schedule, and you can message the bot anytime for on-demand repo explanations.
+---
 
 ## 🗂️ Project Structure
 
+```text
+github-repositories-radar/
+├── GITHUB_RADAR_PT2_clean.json   # Sanitized n8n workflow for Part 2
+├── .env.example                 # Credentials template
+├── .gitignore                   # Leak protection
+├── LICENSE                      # Apache 2.0 license
+└── README.md                    # Documentation & architectural guide
 ```
-github-radar-bot/
-├── README.md
-├── .gitignore
-├── LICENSE
-├── .env.example
-└── GITHUB_RADAR_PT2_clean.json
-```
 
-## ⚠️ Security Notes
+---
 
-- **Never publish** a version containing real API keys or your real Telegram chat ID.
-- Store secrets in a `.env` file or in n8n's credentials store — never hardcode them into the workflow JSON.
+## 📜 License
 
-## 📄 License
+This project is licensed under the **Apache License 2.0**.  
+See the [LICENSE](LICENSE) file for full legal terms.
 
-This project is licensed under the Apache License 2.0 — you're free to use, modify, and distribute it (including commercially), as long as you retain the copyright notice and document any changes you make. See the [LICENSE](./LICENSE) file for full terms.
+---
+
+<p align="center">
+  <b>Built by M.I.R</b> — Autonomous AI solutions for developers and tech enthusiasts.
+</p>

@@ -13,6 +13,19 @@
 
 ---
 
+## 📸 Workflow Architecture
+
+### 🛠️ Complete n8n Automated Pipeline (Part 2)
+Event-driven Telegram trigger, intelligent intent routing (`If1`), dual-agent reasoning pipeline (OpenRouter/Nemotron + Gemini), authentic GitHub README tool, ElevenLabs voice narration, Alibaba Cloud Qwen image generation, and Telegram media delivery:
+
+<p align="center">
+  <a href="assets/n8n_part2_workflow_canvas.png">
+    <img src="assets/n8n_part2_workflow_canvas.png" alt="n8n Part 2 Workflow Canvas">
+  </a>
+</p>
+
+---
+
 ## 🧭 The Two-Part Ecosystem & Architectural Separation
 
 This repository is **Part 2** of the **GitHub Radar** system. The complete architecture is intentionally decoupled into two complementary modules:
@@ -91,11 +104,13 @@ Toggle the workflow to **Active**. You can now message your Telegram bot anytime
 
 ```text
 github-repositories-radar/
-├── GITHUB_RADAR_PT2_clean.json   # Sanitized n8n workflow for Part 2
-├── .env.example                 # Credentials template
-├── .gitignore                   # Leak protection
-├── LICENSE                      # Apache 2.0 license
-└── README.md                    # Documentation & architectural guide
+├── assets/
+│   └── n8n_part2_workflow_canvas.png # Screenshot of the n8n Part 2 workflow canvas
+├── GITHUB_RADAR_PT2_clean.json       # Sanitized n8n workflow for Part 2
+├── .env.example                     # Credentials template
+├── .gitignore                       # Leak protection
+├── LICENSE                          # Apache 2.0 license
+└── README.md                        # Documentation & architectural guide
 ```
 
 ---

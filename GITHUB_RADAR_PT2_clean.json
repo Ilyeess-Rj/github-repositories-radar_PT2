@@ -13,13 +13,7 @@
         160
       ],
       "id": "31569727-9532-4532-99b0-454be7f08f05",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "IIiMywaxm9LF7d7c",
-          "name": "OpenRouter account"
-        }
-      }
+      "name": "OpenRouter Chat Model"
     },
     {
       "parameters": {
@@ -52,21 +46,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        -288,
+        -272,
         160
       ],
       "id": "afcdccb2-9d69-4912-9a44-cdc7d646c239",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "wbnbLnJZ9ckbi52a",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
+      "name": "Google Gemini Chat Model"
     },
     {
       "parameters": {
-        "jsCode": "const maxChunkSize = 4000;\nconst fullText = $json.output || \"\";\n\n// The model writes *bold* and _italic_ using plain characters, which is\n// fragile: if it ever leaves one unmatched (very common with repo names\n// containing underscores), Telegram's Markdown parser rejects the whole\n// message with \"can't parse entities\". To make this bulletproof, we do NOT\n// rely on the model's own markdown being balanced. Instead: escape any raw\n// HTML special characters first, then deterministically convert *word* and\n// _word_ pairs into proper <b> / <i> tags ourselves. Any leftover stray\n// asterisk/underscore that never found a partner is simply left as a plain,\n// harmless character (Telegram's HTML mode does not error on stray text).\nfunction toTelegramHtml(text) {\n  let out = text\n    .replace(/&/g, \"&amp;\")\n    .replace(/</g, \"&lt;\")\n    .replace(/>/g, \"&gt;\");\n\n  // *bold* -> <b>bold</b> (single line only, non-greedy)\n  out = out.replace(/\\*([^\\n*]+?)\\*/g, \"<b>$1</b>\");\n\n  // _italic_ -> <i>italic</i>, but never inside a word (avoids breaking\n  // underscores that are part of repo names or URLs like owner/repo_name)\n  out = out.replace(/(^|[^a-zA-Z0-9_])_([^\\n_]+?)_(?![a-zA-Z0-9_])/g, \"$1<i>$2</i>\");\n\n  return out;\n}\n\nconst htmlText = toTelegramHtml(fullText);\n\n// Split on paragraph boundaries (blank lines) so a chunk never cuts\n// an HTML tag in half.\nconst paragraphs = htmlText.split(/\\n\\n+/).filter(p => p.trim().length > 0);\nconst chunks = [];\nlet current = \"\";\n\nfor (const para of paragraphs) {\n  const candidate = current ? current + \"\\n\\n\" + para : para;\n\n  if (candidate.length > maxChunkSize && current) {\n    chunks.push({ json: { chunk: current } });\n    current = para;\n  } else {\n    current = candidate;\n  }\n\n  // Edge case: a single paragraph is itself longer than maxChunkSize.\n  while (current.length > maxChunkSize) {\n    chunks.push({ json: { chunk: current.substring(0, maxChunkSize) } });\n    current = current.substring(maxChunkSize);\n  }\n}\n\nif (current) {\n  chunks.push({ json: { chunk: current } });\n}\n\nreturn chunks;"
+        "jsCode": "const maxChunkSize = 4000;\nconst fullText = $json.output || \"\";\n\n// The model writes *bold* and _italic_ using plain characters, which is\n// fragile: if it ever leaves one unmatched (very common with repo names\n// containing underscores), Telegram's Markdown parser rejects the whole\n// message with \"can't parse entities\". To make this bulletproof, we do NOT\n// rely on the model's own markdown being balanced. Instead: escape any raw\n// HTML special characters first, then deterministically convert *word* and\n// _word_ pairs into proper <b> / <i> tags ourselves. Any leftover stray\n// asterisk/underscore that never found a partner is simply left as a plain,\n// harmless character (Telegram's HTML mode does not error on stray text).\nfunction toTelegramHtml(text) {\n  let out = text\n    .replace(/&/g, \"&amp;\")\n    .replace(/</g, \"&lt;\")\n    .replace(/>/g, \"&gt;\");\n\n  // *bold* -> <b>bold</b> (single line only, non-greedy)\n  out = out.replace(/\\*([^\\n*]+?)\\*/g, \"<b>$1</b>\");\n\n  // _italic_ -> <i>italic</i>, but never inside a word (avoids breaking\n  // underscores that are part of repo names or URLs like owner/repo_name)\n  out = out.replace(/(^|[^a-zA-Z0-9_])_([^\\n_]+?)_(?![a-zA-Z0-9_])/g, \"$1<i>$2</i>\");\n\n  return out;\n}\n\nconst htmlText = toTelegramHtml(fullText);\n\n// Split on paragraph boundaries (blank lines) so a chunk never cuts\n// an HTML tag in half.\nconst paragraphs = htmlText.split(/\\n\\n+/).filter(p => p.trim().length > 0);\nconst chunks = [];\nlet current = \"\";\n\nfor (const para of paragraphs) {\n  const candidate = current ? current + \"\\n\\n\" + para : para;\n\n  if (candidate.length > maxChunkSize && current) {\n    chunks.push({ json: { chunk: current } });\n    current = para;\n  } else {\n    current = candidate;\n  }\n\n  // Edge case: a single paragraph is itself longer than maxChunkSize.\n  while (current.length > maxChunkSize) {\n    chunks.push({ json: { chunk: current.substring(0, maxChunkSize) } });\n    current = current.substring(maxChunkSize);\n  }\n}\n\nif (current) {\n  chunks.push({ json: { chunk: current } });\n}\n\nreturn chunks;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -91,14 +79,7 @@
         -80
       ],
       "id": "41f5fde7-cb65-41bc-a0a4-49403a689ceb",
-      "name": "Telegram Trigger",
-      "webhookId": "YOUR_WEBHOOK_ID",
-      "credentials": {
-        "telegramApi": {
-          "id": "ZF5gA2s6T9JGHvps",
-          "name": "Telegram account 5"
-        }
-      }
+      "name": "Telegram Trigger"
     },
     {
       "parameters": {
@@ -149,14 +130,7 @@
         16
       ],
       "id": "1a8e91d2-5102-4032-b98e-fc418f3c9a48",
-      "name": "Send a photo message",
-      "webhookId": "YOUR_WEBHOOK_ID",
-      "credentials": {
-        "telegramApi": {
-          "id": "ZF5gA2s6T9JGHvps",
-          "name": "Telegram account 5"
-        }
-      }
+      "name": "Send a photo message"
     },
     {
       "parameters": {
@@ -167,7 +141,7 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
       "position": [
-        -128,
+        -96,
         160
       ],
       "id": "38e96544-2c04-4e48-8f72-8d9fd8b58882",
@@ -199,17 +173,11 @@
       "type": "@n8n/n8n-nodes-langchain.alibabaCloudTool",
       "typeVersion": 1.1,
       "position": [
-        160,
+        240,
         160
       ],
       "id": "9e12f137-3419-4f8c-9599-8a5a7f536e37",
-      "name": "Search",
-      "credentials": {
-        "alibabaCloudApi": {
-          "id": "Xa5CXKnHRHmeBVIl",
-          "name": "Qwen Cloud account"
-        }
-      }
+      "name": "Search"
     },
     {
       "parameters": {
@@ -228,17 +196,11 @@
       "type": "@n8n/n8n-nodes-langchain.alibabaCloudTool",
       "typeVersion": 1.1,
       "position": [
-        16,
+        64,
         160
       ],
       "id": "78ef157d-0757-46f1-8f52-35f0f7edbbfe",
-      "name": "Gen_IMG",
-      "credentials": {
-        "alibabaCloudApi": {
-          "id": "Xa5CXKnHRHmeBVIl",
-          "name": "Qwen Cloud account"
-        }
-      }
+      "name": "Gen_IMG"
     },
     {
       "parameters": {
@@ -269,14 +231,7 @@
         -160
       ],
       "id": "594c3417-3098-456e-a618-fb361e57347d",
-      "name": "Send a text message",
-      "webhookId": "YOUR_WEBHOOK_ID",
-      "credentials": {
-        "telegramApi": {
-          "id": "ZF5gA2s6T9JGHvps",
-          "name": "Telegram account 5"
-        }
-      }
+      "name": "Send a text message"
     },
     {
       "parameters": {
@@ -402,13 +357,7 @@
         512
       ],
       "id": "62646f0d-ddf0-4bcf-b650-a29488c90595",
-      "name": "Google Gemini Chat Model1",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "wbnbLnJZ9ckbi52a",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
+      "name": "Google Gemini Chat Model1"
     },
     {
       "parameters": {
@@ -424,14 +373,7 @@
         336
       ],
       "id": "84176c7b-0776-4e6f-8583-167b8549a0de",
-      "name": "Send an audio file",
-      "webhookId": "YOUR_WEBHOOK_ID",
-      "credentials": {
-        "telegramApi": {
-          "id": "ZF5gA2s6T9JGHvps",
-          "name": "Telegram account 5"
-        }
-      }
+      "name": "Send an audio file"
     },
     {
       "parameters": {
@@ -453,13 +395,36 @@
         336
       ],
       "id": "7fcd5e10-b635-4d44-b9a1-e99bfc3107ad",
-      "name": "Convert text to speech",
-      "credentials": {
-        "elevenLabsApi": {
-          "id": "pfHXLKcdEeenpvNH",
-          "name": "ElevenLabs account"
-        }
-      }
+      "name": "Convert text to speech"
+    },
+    {
+      "parameters": {
+        "content": "## 💬 GitHub Radar — Part 2: On-Demand Multi-Modal Assistant 🎙️🖼️\n\nInteractive event-driven workflow providing real-time repo intelligence on Telegram.\n\n**Flow:** Telegram Trigger ➔ Intent Router (If1) ➔ Dual-Agent Pipeline ➔ Multi-Format Output\n\n• ⚡ **Trigger:** Telegram Webhook (Wakes up instantly on user message)\n• 🔀 **Branch 1 (Voice / Audio):** Keywords ('صوت', 'audio', 'voice') ➔ AI Agent1 (Gemini) reads authentic GitHub README ➔ ElevenLabs TTS (Arabic narration) ➔ Sends Audio file.\n• 🖼️ **Branch 2 (Text & Diagrams):** AI Agent (OpenRouter/Nemotron) ➔ Qwen image generation (`Gen_IMG`) & web search ➔ Splits text (<4096 chars) or sends diagram photos.\n• 🔒 **Zero Hallucination:** Mandates real-time GitHub REST API documentation lookup.",
+        "height": 912,
+        "width": 2144,
+        "color": "#090B1F"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "ffdaeb3b-eb5b-4efc-959c-0a7134ad2175",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🔭 GitHub Radar Bot — Part 2\n \n          By M.I.R",
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        880,
+        416
+      ],
+      "id": "6bfa0459-8554-408a-860a-adec90a2274d",
+      "name": "Sticky Note1"
     }
   ],
   "pinData": {},
@@ -671,12 +636,10 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "ebbd0e74-4cad-4925-9e5c-f1d4df8c4d5c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "YOUR_INSTANCE_ID"
   },
   "nodeGroups": [],
-  "id": "hP3Y0vV58PUHniwx",
   "tags": []
 }

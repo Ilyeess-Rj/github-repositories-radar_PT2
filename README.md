@@ -53,7 +53,7 @@ Edit the AI Agent's system prompt to set which topics the daily scan should focu
 
 ### 4. Replace placeholder values
 The workflow file contains:
-- `YOUR_TELEGRAM_CHAT_ID` → replace with your own Telegram chat ID.
+- `Telegram Chat ID` → fully dynamic (`={{ $('Telegram Trigger').item.json.message.chat.id }}`), automatically replying to whoever interacts with the bot.
 - `YOUR_WEBHOOK_ID` → n8n auto-generates a new one on activation; you usually don't need to set this manually.
 - `YOUR_INSTANCE_ID` → an internal identifier, auto-filled by n8n.
 
